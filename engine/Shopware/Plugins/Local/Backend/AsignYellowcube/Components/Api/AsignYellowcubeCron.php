@@ -87,7 +87,7 @@ class AsignYellowcubeCron
 				//paymentID 5 - prepayment
                 $sWhere = " and (( `paymentID` = 4 and  `status` = 5) or (`paymentID` = 5 and `cleareddate` IS NOT NULL and status = 12))"; // 12 - code for fully paid in s_core_states
             }
-            if ($sMode === 'pp') {
+			if ($sMode === 'pp') {
                 // 12 - completely_paid
                 // 2 - completed 
                 // as per s_core_status
@@ -95,16 +95,16 @@ class AsignYellowcubeCron
             }
             $aOrders  = Shopware()->Db()->fetchAll("select `id` from `s_order` where `ordernumber` > 0" . $sWhere);
            
-            if (count($aOrders) > 0) {
-                foreach ($aOrders as $order) {                    
+		    if (count($aOrders) > 0) {
+                foreach ($aOrders as $order) {
                     $ordid = $order['id'];
-                    $oDetails = $this->objOrders->getOrderDetails($ordid, false, true);                    
-
+					$oDetails = $this->objOrders->getOrderDetails($ordid, false, $isCron);
+					
                     // check if the Status in the Order table
                     $sRequestField = $this->getOrderRequestField($ordid);
                     $iStatusCode = $this->getRecordedStatus($ordid, 'asign_yellowcube_orders', $sRequestField);
                     $sResponseType = '';
-                    
+					
                     // get YC response                    
                     if ($iStatusCode == null && $this->objOrders->getFieldData($ordid, $sRequestField) == '') {
                         // execute the order object
@@ -133,7 +133,7 @@ class AsignYellowcubeCron
                     }
                 }
             }
-        } catch(Exception $e) {            
+        } catch(Exception $e) {
             $this->objErrorLog->saveLogsData('Orders-CRON', $e);
         }
         
@@ -141,8 +141,9 @@ class AsignYellowcubeCron
         if ($isCron) {
             $this->objErrorLog->saveLogsData('Orders-CRON', "Total Yellowcube Orders created: " . $iCount, true);
         } else {
+			$this->objErrorLog->saveLogsData('Orders-CRON', "Total Yellowcube Orders (non cron) created: " . $iCount, true);
             return $iCount;
-        }        
+        }     
     }
     
     /**
