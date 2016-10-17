@@ -144,7 +144,7 @@ Ext.define('Shopware.apps.AsignYellowcube.controller.Order', {
             finaltext += '</table><br />';
 
             // if the response is true?
-            if (iswabaccepted == 1) {
+            if (iswabaccepted == 1 || 1==1) { //we also want to be able to get the response another time, if the response is false.
                 Ext.getCmp('btnInit').setDisabled(false);
             }
         }
@@ -261,6 +261,11 @@ Ext.define('Shopware.apps.AsignYellowcube.controller.Order', {
             Ext.getCmp('fldWab').show();
             Ext.getCmp('wablabel').setText(finalWab, false);
         }
+		else{
+			Ext.getCmp('btnManual').hide(); // hide manual button
+            Ext.getCmp('fldWab').hide();
+			Ext.getCmp('fldWar').hide();
+		}
 
         // print WAR response
         if (finalWar != null) {

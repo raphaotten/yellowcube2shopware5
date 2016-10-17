@@ -506,7 +506,7 @@ class Shopware_Controllers_Backend_AsignYellowcube extends Shopware_Controllers_
     {
         try{
             $oYCron = new AsignYellowcubeCron();
-            $sMode = "pp"; // only prepayment
+			$sMode = "pp_in"; // only prepayment and invoice
             $iCount = $oYCron->autoSendYCOrders($sMode);
 
             // save in database

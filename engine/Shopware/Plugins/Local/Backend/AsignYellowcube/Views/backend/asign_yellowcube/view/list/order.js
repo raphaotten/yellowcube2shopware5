@@ -37,7 +37,7 @@ Ext.define('Shopware.apps.AsignYellowcube.view.list.Order', {
 
         textSearch:      '{s namespace="backend/asign_yellowcube/main" name=yellowcube/grid/orders/search}Search...{/s}',
         textUpdate:      '{s namespace="backend/asign_yellowcube/main" name=yellowcube/grid/orders/update}Update orders{/s}',
-        textPrepaid:     '{s namespace="backend/asign_yellowcube/main" name=yellowcube/grid/orders/active}Send Prepaid orders{/s}'
+        textPrepaid:     '{s namespace="backend/asign_yellowcube/main" name=yellowcube/grid/orders/active}Senden von Vorkasse/Rechnung&amp;Zur Lieferung bereit Bestellungen{/s}'
     },
 
     /**

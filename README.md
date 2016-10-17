@@ -1,3 +1,8 @@
+## Änderungen im /raphaotten/ Fork
+Die Änderungen dienen v.a. unseren eigenen Anforderungen:
+* Automatisches Senden von Bestellungen auf Rechnung, wenn der Lieferstatus auf "teilweise ausgeliefert" steht (potentiell gefährlich?! es könnten Bestellungen per Cron mehrfach ausgeführt werden.)
+* Erneute Abfrage der WAB-Informationen bei Fehler von YC (z.B. wenn ein Artikel nicht auf Lager ist)
+
 ## Was ist der Yellowcube?
 
 Der Yellowcube ist eine automatisierte Warenhauslösung der Swiss Post AG. Sie ermöglicht die automatisierte Verarbeitung der Einlagerung, Lagerhaltung und den Versand von kleinen Gegenständen. Mehr Informationen zum Yellowcube finden Sie auf den Seiten der Swiss Post AG.

@@ -77,8 +77,16 @@ class AsignYellowcubeCron
         $iCount   = 0;
         
         try {
-            // if pp = prepayment then?
-            $sWhere = " and `paymentID` <> 5";
+            // if pp = prepayment then? 
+			// if pp_in = prepayment or invoice then?
+			// bei pp_in senden auch von Bestellungen auf Rechnung paymentID=4, wenn Status "Zur Lieferung bereit" (5) ist
+            $sWhere = " and `paymentID` <> 5 and `paymentID` <>4";
+			if ($sMode === 'pp_in') {
+				//paymentID 4 - invoice
+				//status 5 - "zur Lieferung bereit"
+				//paymentID 5 - prepayment
+                $sWhere = " and (( `paymentID` = 4 and  `status` = 5) or (`paymentID` = 5 and `cleareddate` IS NOT NULL and status = 12))"; // 12 - code for fully paid in s_core_states
+            }
             if ($sMode === 'pp') {
                 // 12 - completely_paid
                 // 2 - completed 
