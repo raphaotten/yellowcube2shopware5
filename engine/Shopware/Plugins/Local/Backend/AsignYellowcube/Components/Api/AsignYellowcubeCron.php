@@ -94,10 +94,10 @@ class AsignYellowcubeCron
                 $sWhere = " and `paymentID` = 5 and `cleareddate` IS NOT NULL and `status` = 2 and `cleared` = 12";
             }
             $aOrders  = Shopware()->Db()->fetchAll("select `id` from `s_order` where `ordernumber` > 0" . $sWhere);
-           
-		    if (count($aOrders) > 0) {
+			if (count($aOrders) > 0) {
                 foreach ($aOrders as $order) {
                     $ordid = $order['id'];
+		    
 					$oDetails = $this->objOrders->getOrderDetails($ordid, false, $isCron);
 					
                     // check if the Status in the Order table
@@ -108,33 +108,40 @@ class AsignYellowcubeCron
                     // get YC response                    
                     if ($iStatusCode == null && $this->objOrders->getFieldData($ordid, $sRequestField) == '') {
                         // execute the order object
-                        echo "Submitting Order for OrderID: " . $ordid . "\n";
+						$this->objErrorLog->saveLogsData('Orders-CRON', "Submitting Order for OrderID: " . $ordid, true);
+                        //echo "Submitting Order for OrderID: " . $ordid . "\n";
                         $aResponse = $this->objYcubeCore->createYCCustomerOrder($oDetails);                        
                     }  elseif ($iStatusCode < 100) {
                         // get the status
-                        echo "Requesting WAB status for OrderID: " . $ordid . "\n";
+                        $this->objErrorLog->saveLogsData('Orders-CRON', "Requesting WAB status for OrderID: " . $ordid, true);
+						//echo "Requesting WAB status for OrderID: " . $ordid . "\n";
                         $aResponse = $this->objYcubeCore->getYCGeneralDataStatus($ordid, "WAB");
                         $sResponseType = 'WAB';
                     } elseif ($iStatusCode == 100) {
                         // get the WAR status
-                        echo "Requesting WAR status for OrderID: " . $ordid . "\n";
+						$this->objErrorLog->saveLogsData('Orders-CRON', "Requesting WAR status for OrderID: " . $ordid, true);
+                        //echo "Requesting WAR status for OrderID: " . $ordid . "\n";
                         $aResponse = $this->objYcubeCore->getYCGeneralDataStatus($ordid, "WAR");
                         $sResponseType = 'WAR';
                     }                   
 
                     // increment the counter
-                    if (isset($aResponse) && count((array)$aResponse) !== 0) {
+                    if (isset($aResponse) && count((array)$aResponse) !== 0 && $aResponse['success'] === true) {
                         $this->objOrders->saveOrderResponseData($aResponse, $ordid);
-                    }
-
-                    // increment the counter
-                    if (count($aResponse) > 0) {
                         $iCount = $iCount + 1;
                     }
+
+                    // increment the counter [we already did..]
+                    //if (count($aResponse) > 0) {
+                    //    $iCount = $iCount + 1;
+                    //}
                 }
             }
-        } catch(Exception $e) {
+        } catch(\Exception $e) {
             $this->objErrorLog->saveLogsData('Orders-CRON', $e);
+			if(!$isCron){
+				return 0;
+			}
         }
         
         // if cron then log in database too..
@@ -189,7 +196,7 @@ class AsignYellowcubeCron
                     // if not 10 then insert the article
                     // execute the article object                    
                     if ($iStatusCode != 10) {
-                        echo "Submitting Article for Article-ID: " . $artid . "\n";
+                        //echo "Submitting Article for Article-ID: " . $artid . "\n";
                         $aResponse = $this->objYcubeCore->insertArticleMasterData($oDetails, $sFlag);
                     } elseif ($iStatusCode == 10 && $iStatusCode != 100) {
                         // get the status                                
@@ -204,7 +211,7 @@ class AsignYellowcubeCron
                     }
                 }
             }
-        } catch(Exception $e) {            
+        } catch(\Exception $e) {            
             $this->objErrorLog->saveLogsData('Articles-CRON', $e);
         }
         
@@ -232,7 +239,7 @@ class AsignYellowcubeCron
             if (count($aResponse) > 0) {                
                 $iCount = $this->objInventory->saveInventoryData($aResponse["data"]);    
             } 
-        } catch(Exception $e) {
+        } catch(\Exception $e) {
             $this->objErrorLog->saveLogsData('Inventory-CRON', $e);
         }
         

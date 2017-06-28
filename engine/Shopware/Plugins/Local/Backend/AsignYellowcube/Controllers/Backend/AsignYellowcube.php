@@ -19,6 +19,7 @@
 use Shopware\AsignYellowcube\Components\Api\AsignYellowcubeCore;
 use Shopware\AsignYellowcube\Components\Api\AsignYellowcubeCron;
 use Shopware\AsignYellowcube\Helpers\ApiClasses\AsignSoapClientApi;
+use Shopware\Components\CSRFWhitelistAware; 
 
 /**
 * Defines backend controller
@@ -28,7 +29,7 @@ use Shopware\AsignYellowcube\Helpers\ApiClasses\AsignSoapClientApi;
 * @author   entwicklung@a-sign.ch
 * @link     http://www.a-sign.ch
 */
-class Shopware_Controllers_Backend_AsignYellowcube extends Shopware_Controllers_Backend_ExtJs
+class Shopware_Controllers_Backend_AsignYellowcube extends Shopware_Controllers_Backend_ExtJs implements CSRFWhitelistAware
 {
     /**
      * Returns stock value for the inventory
@@ -178,8 +179,8 @@ class Shopware_Controllers_Backend_AsignYellowcube extends Shopware_Controllers_
 
             //modified version of the WAR response, since it has items information
             $warResponse = unserialize($order["ycWarResponse"]);
-            $warResponse = $warResponse[WAR]->GoodsIssue;
-
+            $warResponse = $warResponse['GoodsIssue'];
+			
             $warMergeData['GoodsIssueHeader'] = (array)$warResponse->GoodsIssueHeader;
             $warMergeData['CustomerOrderHeader'] = (array)$warResponse->CustomerOrderHeader;
 
@@ -195,7 +196,7 @@ class Shopware_Controllers_Backend_AsignYellowcube extends Shopware_Controllers_
                     $aResponseItems[] = (array)$items;
                 }
             }
-            $warMergeData['CustomerOrderList'] =  $aResponseItems;
+            $warMergeData['CustomerOrderList'] = $aResponseItems;
             $order['ycWarResponse'] = json_encode($warMergeData);
             $order['ycWarCount']    = count($aResponseItems);
             $order['ismanual']  = $isManual;
@@ -308,7 +309,7 @@ class Shopware_Controllers_Backend_AsignYellowcube extends Shopware_Controllers_
             $this->getRepository('Product')->saveAdditionalData($sParams, $updateId, $articleId, $aIntHandling);
 
             $this->View()->assign(array('success' => true));
-        } catch(Exception $e) {
+        } catch(\Exception $e) {
             $this->View()->assign(
                 array(
                     'success' => false,
@@ -383,7 +384,7 @@ class Shopware_Controllers_Backend_AsignYellowcube extends Shopware_Controllers_
                     );
                 }
             }
-        } catch(Exception $e) {
+        } catch(\Exception $e) {
             $this->View()->assign(
                 array(
                     'success' => false,
@@ -394,6 +395,13 @@ class Shopware_Controllers_Backend_AsignYellowcube extends Shopware_Controllers_
         }
     }
 
+	public function getWhitelistedCSRFActions()
+    {
+        return [
+            'createOrder'
+        ];
+    }
+	
     /**
      * Creates Order into Yellowcube datastore
      *
@@ -402,23 +410,23 @@ class Shopware_Controllers_Backend_AsignYellowcube extends Shopware_Controllers_
     public function createOrderAction()
     {
         try{
-            // define parameters
+		    // define parameters
             $ordid = $this->Request()->getParam('ordid');
             $mode  = $this->Request()->getParam('mode');
 
             // get article information based on ID
             $oModel = $this->getRepository('Orders');
             $aOrders = $oModel->getOrderDetails($ordid);
-
+			
             $oYCube = new AsignYellowcubeCore();
             if ($mode) {
                 $oResponse = $oYCube->getYCGeneralDataStatus($ordid, $mode);
-                $clrResponse = $aResponse = (array)$oResponse;
+				$clrResponse = $aResponse = (array)$oResponse;
             } else {
                 $aResponse = $oYCube->createYCCustomerOrder($aOrders);
                 $clrResponse = $aResponse['data'];
             }
-
+			
             $sStatusMsg  = $aResponse['success'];
             $sStatusType = $aResponse['StatusType'];
             $sStatusCode = $aResponse['StatusCode'];
@@ -434,13 +442,20 @@ class Shopware_Controllers_Backend_AsignYellowcube extends Shopware_Controllers_
                 );
             } else {
                 // get the serialized response
-                $sTmpResult = $this->getSerializedResponse($clrResponse); // to override the content
+                //$aResponse["data"]->WAR[0]); // to override the content
 
                 // log the response whether S or E
-                $oModel->saveOrderResponseData($aResponse, $ordid, $mode);
+				if($mode === "WAR"){
+					$sTmpResult = $this->getSerializedResponse($aResponse["data"]);
+					$oModel->saveOrderResponseData($aResponse["data"]->WAR[0], $ordid, $mode);
+					//$oModel->saveOrderResponseData($aResponse["data"], $ordid, $mode);
+				}
+				else{
+					$sTmpResult = $this->getSerializedResponse($aResponse["data"]);
+					$oModel->saveOrderResponseData($aResponse["data"], $ordid, $mode);
+				}
 
-                // save in database
-                if ($sStatusMsg || $sStatusType === 'S' || $sStatusCode === 100) {
+                if ($sStatusMsg == true || $sStatusType === 'S' || $sStatusCode === 100) {
                     $this->View()->assign(
                         array(
                             'success'       => true,
@@ -459,11 +474,11 @@ class Shopware_Controllers_Backend_AsignYellowcube extends Shopware_Controllers_
                     );
                 }
             }
-        } catch(Exception $e) {
+        } catch(\Exception $e) {
             $this->View()->assign(
                 array(
                     'success' => false,
-                    'code'    => $e->getCode(),
+                    'code'    => "1".$e->getCode(),
                     'message' => $e->getMessage()
                 )
             );
@@ -486,7 +501,7 @@ class Shopware_Controllers_Backend_AsignYellowcube extends Shopware_Controllers_
             $oModel->saveOrderEoriNumber($orderId, $eoriNumber);
 
             $this->View()->assign(array('success' => true));
-        } catch(Exception $e) {
+        } catch(\Exception $e) {
             $this->View()->assign(
                 array(
                     'success' => false,
@@ -521,11 +536,12 @@ class Shopware_Controllers_Backend_AsignYellowcube extends Shopware_Controllers_
                 $this->View()->assign(
                     array(
                         'success' => false,
-                        'code'    => -1
+                        'code'    => -1,
+						'message' => '' //ro!!
                     )
                 );
             }
-        } catch(Exception $e) {
+        } catch(\Exception $e) {
             $this->View()->assign(
                 array(
                     'success' => false,
@@ -565,7 +581,7 @@ class Shopware_Controllers_Backend_AsignYellowcube extends Shopware_Controllers_
                     )
                 );
             }
-        } catch(Exception $e) {
+        } catch(\Exception $e) {
             $this->View()->assign(
                 array(
                     'success' => false,
@@ -606,7 +622,7 @@ class Shopware_Controllers_Backend_AsignYellowcube extends Shopware_Controllers_
                     )
                 );
             }
-        } catch(Exception $e) {
+        } catch(\Exception $e) {
             $this->View()->assign(
                 array(
                     'success' => false,

@@ -95,6 +95,9 @@ Ext.define('Shopware.apps.AsignYellowcube.controller.Order', {
             finalInit = null, finalWab = null, finalWar = null,
             orderId = record.get('ordid');
 
+			//console.log(record.get('iswaraccepted'));
+			//console.log(record.get('ycWarResponse'));
+			
             // frame the response for initial, wab and war
             if (ismanual && record.get('ycReference') == 0) {
                 Ext.getCmp('btnManual').show();
@@ -205,7 +208,7 @@ Ext.define('Shopware.apps.AsignYellowcube.controller.Order', {
         // if the WAR Response in !empty?
         if (warResponse !== Ext.undefined)  {
         	Ext.Object.each(warResponse, function(key, child, allset) {
-                sResponse += '<table width=100% border=0>';
+                sResponse += '<div><table width=100% border=0>';
                 sResponse += '<tr><td colspan=2><b><u>' + key + '</u></b></td></tr>';
 
                 // loop through GoodsIssueHeader, CustomerOrderHeader and CustomerOrderList
@@ -227,13 +230,13 @@ Ext.define('Shopware.apps.AsignYellowcube.controller.Order', {
                     }
                 });
 
-                sResponse += '</table><hr />';
+                sResponse += '</table><hr /></div>';
             });
             finalWar += sResponse;
         } else {
             finalWar = null;
         }
-
+		console.log(finalWar);
         return finalWar;
     },
 
@@ -247,7 +250,7 @@ Ext.define('Shopware.apps.AsignYellowcube.controller.Order', {
     */
     displaySidebarFields: function(finaltext, finalWab, finalWar, orderId) {
         Ext.getCmp('textoId').setValue(orderId);
-
+		
         // print initial response
         if (finaltext != null) {
             Ext.getCmp('btnManual').hide(); // hide manual button
@@ -261,10 +264,8 @@ Ext.define('Shopware.apps.AsignYellowcube.controller.Order', {
             Ext.getCmp('fldWab').show();
             Ext.getCmp('wablabel').setText(finalWab, false);
         }
-		else{
-			Ext.getCmp('btnManual').hide(); // hide manual button
+		else if(finalWar == null){
             Ext.getCmp('fldWab').hide();
-			Ext.getCmp('fldWar').hide();
 		}
 
         // print WAR response
@@ -273,6 +274,10 @@ Ext.define('Shopware.apps.AsignYellowcube.controller.Order', {
             Ext.getCmp('fldWar').show();
             Ext.getCmp('warlabel').setText(finalWar, false);
         }
+		else{
+			Ext.getCmp('fldWar').hide();
+		}
+		
     },
 
     /**
@@ -329,12 +334,12 @@ Ext.define('Shopware.apps.AsignYellowcube.controller.Order', {
                 vType: 2
             },
             success: function (result) {
+                Ext.getCmp('mainWindow').setLoading(false);
                 var response = Ext.JSON.decode(result.responseText),
                 	message = response.message,
                 	code = response.code;
 
                 // if the success message..
-                Ext.getCmp('mainWindow').setLoading(false);
                 if(response.success) {
                     Ext.Msg.show({
                         title: me.snippets.textSuccess,

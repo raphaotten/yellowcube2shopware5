@@ -153,7 +153,7 @@ h1 {
 	{if $isForeignCountry}
 		{* include CN22 section *}
 		{* SPS_INTPRI = 112; SPS_INTECO = 113 *}
-		{if $Order._order.dispatchID == "112" || $Order._order.dispatchID == "113"}
+		{if 1==1 || $Order._order.dispatchID == "112" || $Order._order.dispatchID == "113"}
 			{include file=$smarty.current_dir|cat:'/cn22content.tpl' Pages=$Pages}
 		{/if}
 		{section name=foo start=0 loop=3 step=1}

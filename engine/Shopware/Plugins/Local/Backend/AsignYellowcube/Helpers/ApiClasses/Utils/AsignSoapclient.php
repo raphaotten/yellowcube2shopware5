@@ -118,7 +118,7 @@ class AsignSoapclient extends \SoapClient
     {
         try {
             return parent::__call($method, $args);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $message = $e->getMessage();
             $message .= PHP_EOL . PHP_EOL . 'Request XML: ' . PHP_EOL . $this->__getLastRequest();
             throw new \Exception($message, $e->getCode(), $e);

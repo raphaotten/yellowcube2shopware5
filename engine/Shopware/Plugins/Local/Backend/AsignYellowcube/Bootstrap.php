@@ -294,9 +294,11 @@ class Shopware_Plugins_Backend_AsignYellowcube_Bootstrap extends Shopware_Compon
      *
      * @param Enlight_Event_EventArgs $arguments
      */
+	 //change ro 20170122 correct argument type is Enlight_Hook_HookArgs
     public function beforeDocumentRender(Enlight_Hook_HookArgs $arguments)
     {
-        $aRenderer = $arguments->get("_renderer");
+        try {
+		$aRenderer = $arguments->get("_renderer");
 
         // if renderer is empty then?
         // call is made from BE
@@ -308,13 +310,12 @@ class Shopware_Plugins_Backend_AsignYellowcube_Bootstrap extends Shopware_Compon
             );
         }
 
-        try {
             /** @extends Shopware_Components_Document **/
             require_once(Shopware()->AppPath("Plugins/Local/Backend/AsignYellowcube/Components/") . "PdfaDocument.php");
 
             $pdfaDoc = Enlight_Class::Instance('PdfaDocument');
             $pdfaDoc->pdfaRender($aRenderer);
-        } catch(Exception $e) {
+        } catch(\Exception $e) {
             $oLogs = Shopware()->Models()->getRepository("Shopware\CustomModels\AsignModels\Errorlogs\Errorlogs");
             $oLogs->saveLogsData('beforeDocumentRender', $e);
         }
@@ -676,7 +677,7 @@ class Shopware_Plugins_Backend_AsignYellowcube_Bootstrap extends Shopware_Compon
                     'value'         => ''
                )
            );
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             throw new Exception('<b>Fehler beim erstellen des Einstellungsformulars</b><br />' . $e->getMessage());
         }
     }

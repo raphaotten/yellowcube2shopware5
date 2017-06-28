@@ -31,8 +31,8 @@ Ext.define('Shopware.apps.AsignYellowcube.view.sidebar.Orders', {
         textStatus:             '{s namespace="backend/asign_yellowcube/main" name=yellowcube/details/orders/status}Get Order Status{/s}',
         textManual:             '{s namespace="backend/asign_yellowcube/main" name=yellowcube/details/orders/mansend}Manually send Order{/s}',        
         textCustomer:           '{s namespace="backend/asign_yellowcube/main" name=yellowcube/details/orders/customer}Yellowcube Customer Order Status (WAB){/s}',
-        textReply:              '{s namespace="backend/asign_yellowcube/main" name=yellowcube/details/orders/reply}Get Customer Order Reply{/s}',
-        textWarResponse:        '{s namespace="backend/asign_yellowcube/main" name=yellowcube/details/orders/response}Yellowcube WAR Response{/s}'
+		textWarResponse:        '{s namespace="backend/asign_yellowcube/main" name=yellowcube/details/orders/response}Yellowcube WAR Response{/s}',
+        textReply:              '{s namespace="backend/asign_yellowcube/main" name=yellowcube/details/orders/reply}Get Customer Order Reply{/s}'
     },
 
     /**
@@ -107,7 +107,7 @@ Ext.define('Shopware.apps.AsignYellowcube.view.sidebar.Orders', {
         return Ext.create('Ext.container.Container', {
             border: false,
             padding: 5,
-            maxHeight: 498,
+            maxHeight: 598,
             autoScroll: true,
             ordStore: me.ordStore,
             layout: {
@@ -244,7 +244,7 @@ Ext.define('Shopware.apps.AsignYellowcube.view.sidebar.Orders', {
             ]
         });
     },
-
+	
     /**
      * Creates and returns WAB response text on the sidebar
      * @return Ext.form.Label
@@ -285,19 +285,21 @@ Ext.define('Shopware.apps.AsignYellowcube.view.sidebar.Orders', {
      * @return Ext.form.FieldSet
      */
     createWarFieldset: function() {
-        var me = this;
+		var me = this;
 
         return Ext.create('Ext.form.FieldSet', {
             id: 'fldWar',
             flex: 1,
             padding: 10,
+			maxHeight: 400,
             collapsible: true,
             title: me.snippets.textWarResponse,
             autoScroll: true,
             layout: 'anchor',
             hidden: true,
             items: [
-                me.createWarText()                
+                me.createWarText(),
+				me.createDummyLabel()
             ]
         });
     },
@@ -315,5 +317,17 @@ Ext.define('Shopware.apps.AsignYellowcube.view.sidebar.Orders', {
         });
 
         return me.warLabel;
-    }
+    },
+	
+	createDummyLabel: function() {
+        var me = this;
+
+        me.dummyLabel = Ext.create('Ext.form.Label', {
+            id: 'dummylabel',
+            text: '.',
+            padding: '0 0 5 0'            
+        });
+		
+        return me.dummyLabel;
+    },
 });

@@ -1,48 +1,60 @@
 {assign var="shopdata" value=$smarty.session.Shopware.shopData}
 {foreach from=$Pages item=postions name="pagingLoop" key=page}
 	<div id="head_logo">
-		<img src="{$smarty.session.Shopware.pluginPath|cat:'pdf_logo.jpg'}" />
+		{$Containers.Logo.value}
 	</div>
 	<div id="header">
 		<div id="head_left">
-			{if $smarty.foreach.pagingLoop.first}
-				{block name="document_index_selectAdress"}
-					{assign var="address" value="billing"}
-				{/block}
-				<div id="head_sender">
-					<p class="sender">{$shopdata.shopname} - {$shopdata.address}</p>
-					{$User.$address.company}<br />
-					{$User.$address.firstname} {$User.$address.lastname}<br />
-					{$User.$address.street} {$User.$address.streetnumber}<br />
-					{$User.$address.zipcode} {$User.$address.city}<br />
-					{if $User.$address.state.shortcode}{$User.$address.state.shortcode} - {/if}{$User.$address.country.countryen}<br />
-					<br />
-					{s name=yellowcube/details/orders/eori}EORI:{/s} {$User.billing.attributes.text1}
-				</div>
-			{/if}
-		</div>
-		<div id="head_right" style="margin-top:50px;">
-			{block name="document_index_head_right"}
-				{* Removed default values and replaced with shipping address *}
-				<small><u>{s name=ConfirmHeaderShipping}Lieferadresse{/s}</u></small><br />
-				{$User.shipping.company}<br />
-				{$User.shipping.firstname} {$User.shipping.lastname}<br />
-				{$User.shipping.street} {$User.shipping.streetnumber}<br />
-				{$User.shipping.zipcode} {$User.shipping.city}<br />
-				{if $User.shipping.state.shortcode}{$User.shipping.state.shortcode} - {/if}{$User.shipping.country.countryen}<br />
-				<br />
-
-				{s name="DocumentIndexCustomerID"}Kunden-Nr.:{/s} {$User.billing.customernumber|string_format:"%06d"}<br />
-				{if $User.billing.ustid}
-					{s name="DocumentIndexUstID"}USt-IdNr.:{/s} {$User.billing.ustid|replace:" ":""|replace:"-":""}<br />
-				{/if}
-				{s name="DocumentIndexOrderID"}Bestell-Nr.:{/s} {$Order._order.ordernumber}<br />
-				{s name="DocumentIndexDate"}Datum:{/s} {$Document.date}<br />
-				{if $Document.deliveryDate}{s name="DocumentIndexDeliveryDate"}Liefertermin:{/s} {$Document.deliveryDate}<br />{/if}
+		{if $smarty.foreach.pagingLoop.first}
+			{block name="document_index_selectAdress"}
+				{assign var="address" value="billing"}
 			{/block}
+			<div id="head_sender">
+				<p class="sender">{$Containers.Header_Sender.value}</p>
+				{$User.$address.company}<br />
+				{$User.$address.salutation|salutation}
+				{if {config name="displayprofiletitle"}}
+					{$User.$address.title}<br/>
+				{/if}
+				{$User.$address.firstname} {$User.$address.lastname}<br />
+				{$User.$address.street}<br />
+				{block name="document_index_address_additionalAddressLines"}
+					{if {config name=showAdditionAddressLine1}}
+						{$User.$address.additional_address_line1}<br />
+					{/if}
+					{if {config name=showAdditionAddressLine2}}
+						{$User.$address.additional_address_line2}<br />
+					{/if}
+				{/block}
+				{block name="document_index_address_cityZip"}
+                    {if {config name=showZipBeforeCity}}
+                        {$User.$address.zipcode} {$User.$address.city}<br />
+                    {else}
+                        {$User.$address.city} {$User.$address.zipcode}<br />
+                    {/if}
+				{/block}
+				{block name="document_index_address_countryData"}
+				    {if $User.$address.state.shortcode}{$User.$address.state.shortcode} - {/if}{$User.$address.country.countryen}<br />
+				{/block}
+			</div>
+		{/if}
+		</div>
+		<div id="head_right">
+				<strong>
+				{block name="document_index_head_right"}
+					{$Containers.Header_Box_Right.value}
+					{s name="DocumentIndexCustomerID"}{/s} {$User.billing.customernumber|string_format:"%06d"}<br />
+					{if $User.billing.ustid}
+					{s name="DocumentIndexUstID"}{/s} {$User.billing.ustid|replace:" ":""|replace:"-":""}<br />
+					{/if}
+					{s name="DocumentIndexOrderID"}{/s} {$Order._order.ordernumber}<br />
+					{s name="DocumentIndexDate"}{/s} {$Document.date}<br />
+					{if $Document.deliveryDate}{s name="DocumentIndexDeliveryDate"}{/s} {$Document.deliveryDate}<br />{/if}
+				{/block}
+				</strong>
 		</div>
 	</div>
-
+	
 	<div id="head_bottom" style="clear:both">
 		{block name="document_index_head_bottom"}
 			<h1>{s name="DocumentIndexInvoiceNumber"}Rechnung Nr. {$Document.id}{/s}</h1>
@@ -209,7 +221,7 @@
 				{if $Document.netto == true}
 				<p>{s name="DocumentIndexAdviceNet"}Hinweis: Der Empfänger der Leistung schuldet die Steuer.{/s}</p>
 				{/if}
-				<p>{s name="DocumentIndexSelectedPayment"}Gew&auml;hlte Zahlungsart{/s} {$Order._payment.description}</p>
+				<div>{s name="DocumentIndexSelectedPayment"}Gew&auml;hlte Zahlungsart{/s} {$Order._payment.description}</div>
 			{/block}
 			{block name="document_index_info_voucher"}
 				{if $Document.voucher}
@@ -231,7 +243,7 @@
 			{/block}
 			{block name="document_index_info_dispatch"}
 				{if $Order._dispatch.name}
-					<div style="font-size:11px;color:#333;">
+					<div style="font-size:11px;">
 						{s name="DocumentIndexSelectedDispatch"}Gewählte Versandart:{/s}
 						{$Order._dispatch.name}
 					</div>
@@ -246,49 +258,18 @@
 				{/if}
 			{/block}
 			</div>
-			<img src="{$smarty.session.Shopware.pluginPath|cat:'owner_signature.jpg'}" class="signpic" />
+			<div>
+			{*<img src="{$smarty.session.Shopware.pluginPath|cat:'owner_signature.jpg'}" class="signpic" />
+			<br/>
+			Raphael Otten<br/>*}
+			<br/>Ihr SIHAWO-Team
+			</div><br/>
 		{/block}
 	{/if}
 
-	<div id="footer" style="bottom: -10mm;">
-		<table style="height: 90px;" border="0" width="100%">
-			<tbody>
-				<tr valign="top">
-					<td style="width: 25%;">
-						<p>
-							<span style="font-size: small;">{$shopdata.company}</span>
-						</p>
-						<p>
-							<span style="font-size: small;">{$shopdata.address|nl2br}<br/>{$shopdata.country}</span>
-						</p>
-						<p>
-							<span style="font-size: small">UST-ID: {$shopdata.taxnum}</span>
-						</p>
-					</td>
-					<td style="width: 25%;">
-						<p>
-							<span style="font-size: small;">{$shopdata.bankaccnt|nl2br}</span>
-						</p>
-					</td>
-					<td style="width: 25%;padding-left:10px;">
-						<p>
-							<span style="font-size: small;">AGB<br/></span>
-						</p>
-						<p>
-							<span style="font-size: small;">{s name="DocumentFooterAgb"}Gerichtsstand ist Musterstadt<br/>Erfüllungsort Musterstadt<br/>Gelieferte Ware bleibt bis zur vollständigen Bezahlung unser Eigentum{/s}</span>
-						</p>
-					</td>
-					<td style="width: 25%;padding-left:10px;">
-						<p>
-							<span style="font-size: small;">{$shopdata.shopname}</span>
-						</p>
-						<p>
-							<span style="font-size: small;">{$shopdata.mail}</span>
-						</p>
-					</td>
-				</tr>
-			</tbody>
-		</table>
+
+	<div id="footer">
+	{$Containers.Footer.value}
 	</div>
 	{if !$smarty.foreach.pagingLoop.last}
 		<pagebreak />

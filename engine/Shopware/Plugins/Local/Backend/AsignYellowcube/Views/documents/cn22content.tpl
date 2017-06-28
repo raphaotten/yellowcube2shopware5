@@ -1,6 +1,6 @@
 {assign var="shopdata" value=$smarty.session.Shopware.shopData}
 {foreach from=$Pages item=postions name="pagingLoop" key=page}
-	<table cellpadding="0" cellspacing="0" border="0" class="main-table">
+	<table cellpadding="5" cellspacing="0" border="1px" class="main-table">
 		<tbody valign="top">
 			<tr class="thead">
 				<td class="line-top line-left line-bottom"><img width="80" src="{$smarty.session.Shopware.pluginPath|cat:'cn22_logo.jpg'}" alt=""/></td>
@@ -21,7 +21,7 @@
 			<!-- pre-body information -->
 			<tr>
 				<td colspan="3" align="right" class="line-bottom padd-none line-left">
-					<table cellpadding="" cellspacing="0" border="0">
+					<table cellpadding="5" cellspacing="0" border="1">
 						<tr>
 							<td class="paddlr-5" width="120">{s name=yellowcube/print/cn22/param_1}Cadeau<br />Geschenk<br />Gift{/s}</td>
 							<td class="paddlr-5">{s name=yellowcube/print/cn22/param_2}Echantillon commercial<br />Warenmuster<br />Commercial sample{/s}</td>
@@ -35,7 +35,7 @@
 			<!-- article information -->
 			<tr>
 				<td colspan="3" class="line-bottom padd-none line-right line-left">
-					<table cellpadding="0" cellspacing="0" border="0" width="100%" class="article-table">
+					<table cellpadding="5px" cellspacing="0" border="1" width="100%" class="article-table">
 						<tbody>
 							<tr>
 								<td class="line-bottom line-right paddlr-5">
@@ -148,8 +148,8 @@
 								{/s}
 							</td>
 							<td class="paddlr-5">{$smarty.now|date_format:"%d.%m.%Y"}</td>
-							<td width="70" align="center" class="paddlr-5">
-								<img width="40" src="{$smarty.session.Shopware.pluginPath|cat:'owner_signature.jpg'}" alt=""/>
+							<td width="100" align="center" class="paddlr-5">
+								<img width="60" src="{$smarty.session.Shopware.pluginPath|cat:'owner_signature.jpg'}" alt=""/>
 							</td>
 						</tr>
 					</table>

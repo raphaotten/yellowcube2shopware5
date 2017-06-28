@@ -249,7 +249,7 @@ class Repository extends ModelRepository
             $clrResponse = (array)$clrResponse;
             if (count($clrResponse) > 0) {
                 // if response is not "E" then?
-                if ($clrResponse['StatusType'] !== 'E') {
+				if (array_key_exists("StatusType", $clrResponse) && $clrResponse['StatusType'] !== 'E' && array_key_exists("Reference", $clrResponse)) {
                     $sReference = ", `ycReference` = '" . $clrResponse['Reference'] . "'";
                 }
 
@@ -269,15 +269,14 @@ class Repository extends ModelRepository
 
                 // update tracking code in s_order table
                 if ($mode === 'WAR') {
-                    $sTrackingCode = $aResponseData[WAR]->GoodsIssue->CustomerOrderHeader->PostalShipmentNo;
+                    $sTrackingCode = $clrResponse["GoodsIssue"]->CustomerOrderHeader->PostalShipmentNo;
                     Shopware()->Db()->query("update `s_order` set `trackingcode` = '" . $sTrackingCode . "' where `id` = '" . $ordid . "'");
-
                     $this->_bIsTrackingResponse = true;
                 }
             }
-        } catch(Exception $e) {
+        } catch(\Exception $e) {
             $oLogs = Shopware()->Models()->getRepository("Shopware\CustomModels\AsignModels\Errorlogs\Errorlogs");
-            $oLogs->saveLogsData('saveOrderResponseData', $e);
+            $oLogs->saveLogsData('saveOrderResponseData', $e->getMessage(), true);
         }
     }
 

@@ -2,7 +2,7 @@
 
 {block name='frontend_register_index_form_billing_fieldset' prepend}
 	{assign var="form_data" value=$register->billing->form_data}	
-	<div class="panel register--address">
+	<div class="panel register--address is--hidden">
 		<h2 class="panel--title is--underline">{s namespace="frontend/plugins/asign_yellowcube/register/billing_fieldset" name="sYellowcubeEoriNumber"}EORI Number{/s}</h2>
 		<div class="panel--body is--wide">
 			<input name="register[billing][text1]" type="text" maxlength="17"  id="register_billing_text1" value="{$form_data.text1|escape}" class="register--field" />

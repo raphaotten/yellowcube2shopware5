@@ -352,11 +352,11 @@ class AsignSoapClientApi
 
             $sClient  =  new AsignSoapclient($wsdl, $aParams);
             return $sClient;
-        } catch(Exception $sEx) {
+        } catch(\Exception $sEx) {
             $oLogs = Shopware()->Models()->getRepository("Shopware\CustomModels\AsignModels\Errorlogs\Errorlogs");
             $oLogs->saveLogsData('SOAP_INIT', $sEx);
 
-            throw new Exception($sEx->getMessage());
+            throw new \Exception($sEx->getMessage());
             return(array(
                             'success' => false,
                             'message' => $sEx->getMessage()
@@ -390,15 +390,25 @@ class AsignSoapClientApi
             // END-DEBUG
 
             return $sResponse;
-        } catch(SoapFault $sEx) {
+        }/* catch(SoapFault $sEx) {
             $oLogs = Shopware()->Models()->getRepository("Shopware\CustomModels\AsignModels\Errorlogs\Errorlogs");
-            $oLogs->saveLogsData('SOAP_CALL', $sEx);
+            $oLogs->saveLogsData('SOAP_CALL', "SoapFault: ".$sEx);
 
-            throw new Exception($sEx->getMessage());
+            throw new \Exception($sEx->getMessage());
             return(array(
                             'success' => false,
                             'message' => $sEx->getMessage()
                         ));
-        }
+        }*/
+		catch (\Exception $e) {
+            $oLogs = Shopware()->Models()->getRepository("Shopware\CustomModels\AsignModels\Errorlogs\Errorlogs");
+            $oLogs->saveLogsData('SOAP_CALL', $e);
+			//$oLogs->saveLogsData('SOAP_CALL', $params);
+            throw new \Exception($e->getMessage());
+			return(array(
+                            'success' => false,
+                            'message' => $e->getMessage()
+                        ));
+		}
     }
 }

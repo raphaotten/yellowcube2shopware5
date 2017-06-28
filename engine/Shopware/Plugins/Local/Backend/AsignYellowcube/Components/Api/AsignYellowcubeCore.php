@@ -132,9 +132,9 @@ class AsignYellowcubeCore
                             'success'   => true,
                             'data'      => $aResponse
                         ));
-        } catch(Exception $soapex) {
+        } catch(\Exception $soapex) {
             $this->oLogs->saveLogsData('getInventory', $soapex);
-			throw new Exception($soapex->getMessage());
+			throw new \Exception($soapex->getMessage());
             return(array(
                             'success' => false,
                             'message' => $soapex->getMessage()
@@ -162,9 +162,9 @@ class AsignYellowcubeCore
                             'success'   => true,
                             'data'      => $aResponse
                         ));
-        } catch(Exception $soapex) {
+        } catch(\Exception $soapex) {
             $this->oLogs->saveLogsData('insertArticleMasterData', $soapex);
-            throw new Exception($soapex->getMessage());
+            throw new \Exception($soapex->getMessage());
             return(array(
                             'success' => false,
                             'message' => $soapex->getMessage()
@@ -182,35 +182,37 @@ class AsignYellowcubeCore
      */
     public function getYCGeneralDataStatus($itemId, $sType)
     {
-        // define params
-        $aParams         = $this->getInitialParams($sType);
-        $aFunc["ART"]    = "GetInsertArticleMasterDataStatus";
-        $aFunc["WAB"]    = "GetYCCustomerOrderStatus";
-        $aFunc["WAR"]    = "GetYCCustomerOrderReply";
-
-        $oObject = new \stdClass();
-        $oObject->ControlReference = new \stdClass();
-        foreach ($aParams as $key => $param) {
-            $oObject->ControlReference->$key = $param;
-        }
-
-        // if customer order reply then?
-        if ($sType == "WAR") {
-            // add Max Wait Time...
-            $oObject->ControlReference->TransMaxWait = $this->oSoapApi->getTransMaxTime();
-
-            // get Reference number for the YC status
-            $oObject->CustomerOrderNo = $this->getYCReferenceNumber($itemId, $sType);
-        } elseif ($sType == "ART" || $sType == "WAB") {
-            // get Reference number for the YC status
-            $oObject->Reference = $this->getYCReferenceNumber($itemId, $sType);
-        }
-
-        // ping and get response...
+		// define params
+		$aParams         = $this->getInitialParams($sType);
+		$aFunc["ART"]    = "GetInsertArticleMasterDataStatus";
+		$aFunc["WAB"]    = "GetYCCustomerOrderStatus";
+		$aFunc["WAR"]    = "GetYCCustomerOrderReply";
+		$oObject = new \stdClass();
+		$oObject->ControlReference = new \stdClass();
+		
+		foreach ($aParams as $key => $param) {
+			$oObject->ControlReference->$key = $param;
+		}
+		
+		// if customer order reply then?
+		if ($sType == "WAR") {
+			// add Max Wait Time...
+			$oObject->ControlReference->TransMaxWait = $this->oSoapApi->getTransMaxTime();
+			// get Reference number for the YC status
+			$oObject->CustomerOrderNo = $this->getYCReferenceNumber($itemId, $sType);
+		} elseif ($sType == "ART" || $sType == "WAB") {
+			// get Reference number for the YC status
+			$oObject->Reference = $this->getYCReferenceNumber($itemId, $sType);
+		}
+	
+		// ping and get response...
         try{
-            $aResponse = $this->oSoapApi->callFunction($aFunc[$sType], $oObject);
-            return $aResponse;
-        } catch(Exception $soapex) {
+			$aResponse = $this->oSoapApi->callFunction($aFunc[$sType], $oObject);
+			return(array(
+                            'success' => true,
+                            'data' => $aResponse
+                        ));
+        } catch(\Exception $soapex) {
             $this->oLogs->saveLogsData('getYCGeneralDataStatus', $soapex);
             return(array(
                             'success' => false,
@@ -366,18 +368,23 @@ class AsignYellowcubeCore
     {
         // get the formatted article data
         $oRequestData = $this->getYCFormattedOrderData($aOrders, $isReturn);
-
+		 
         // if the response is an array and is having error message?
         if (is_array($oRequestData) && $oRequestData['success'] === false) {
+			$this->oLogs->saveLogsData('Orders-CORE', print_r($oRequestData,true), true);
             return $oRequestData;
         } else {
             try{
-                $aResponse = $this->oSoapApi->callFunction("CreateYCCustomerOrder", $oRequestData);
+				$this->oLogs->saveLogsData('Orders-CORE',"callFunction CreateYCCustomerOrder", true);
+				$aResponse = $this->oSoapApi->callFunction("CreateYCCustomerOrder", $oRequestData);
+				$this->oLogs->saveLogsData('Orders-CORE',"end callFunction CreateYCCustomerOrder", true);
                 return(array(
                                 'success'   => true,
+                                'StatusCode'   => 100,
                                 'data'      => $aResponse
                             ));
-            } catch(Exception $soapex) {
+			}
+            catch(\Exception $soapex) {
                 $this->oLogs->saveLogsData('createYCCustomerOrder', $soapex);
                 return(array(
                                 'success' => false,
@@ -547,6 +554,9 @@ class AsignYellowcubeCore
                 $oObject->Order->OrderDocuments->Docs->DocMimeType              = $sDocMimeType;
                 $oObject->Order->OrderDocuments->Docs->DocStream                = $pdfData; // base64 encoded data
             }
+			else{
+                $this->oLogs->saveLogsData('getYCFormattedOrderData', "Order PDF does not exist.", true);
+			}
 
             return $oObject;
         }
@@ -589,8 +599,8 @@ class AsignYellowcubeCore
             } else {
                 return $zipValue;
             }
-        } catch (Exception $sEx) {
-            $this->oLogs->saveLogsData('verifyZipStatus', $soapex);
+        } catch (\Exception $sEx) {
+            $this->oLogs->saveLogsData('verifyZipStatus', $sEx);
             return(array(
                         'success' => false,
                         'message' => $sEx->getMessage(),
@@ -685,17 +695,18 @@ class AsignYellowcubeCore
                    );
 
         // if Type is ART or WAB
-        if ($sType === 'ART') {
+        if ($sType === 'ART' || $sType === 'WAB') {
             $sColumn = 'artid';
+			$sReference = Shopware()->Db()->fetchOne("select `ycReference` from `" . $aTables[$sType] . "` where `" . $sColumn . "` = '" . $myId ."'");
         } else {
-            $sColumn = 'ordid';
+            //$sColumn = 'ordid';
+			$sReference = Shopware()->Db()->fetchOne("select `ordernumber` from `s_order` where `id` = '" . $myId . "'");
         }
 
-        $sReference = Shopware()->Db()->fetchOne("select `ycReference` from `" . $aTables[$sType] . "` where `" . $sColumn . "` = '" . $myId ."'");
         // if second calling then?
-        if ($sType == "WAR") {
-            $sReference = Shopware()->Db()->fetchOne("select `ordernumber` from `s_order` where `id` = '" . $myId . "'");
-        }
+        /*if ($sType == "WAR") {
+            
+        }*/
 
         return $sReference;
     }
