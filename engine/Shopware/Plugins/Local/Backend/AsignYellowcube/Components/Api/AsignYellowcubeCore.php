@@ -694,20 +694,17 @@ class AsignYellowcubeCore
                         'WAR'   => 'asign_yellowcube_orders'
                    );
 
-        // if Type is ART or WAB
-        if ($sType === 'ART' || $sType === 'WAB') {
+        // if Type is ART
+        if ($sType === 'ART') {
             $sColumn = 'artid';
-			$sReference = Shopware()->Db()->fetchOne("select `ycReference` from `" . $aTables[$sType] . "` where `" . $sColumn . "` = '" . $myId ."'");
         } else {
-            //$sColumn = 'ordid';
-			$sReference = Shopware()->Db()->fetchOne("select `ordernumber` from `s_order` where `id` = '" . $myId . "'");
+            $sColumn = 'ordid';
         }
-
+		$sReference = Shopware()->Db()->fetchOne("select `ycReference` from `" . $aTables[$sType] . "` where `" . $sColumn . "` = '" . $myId ."'");
         // if second calling then?
-        /*if ($sType == "WAR") {
-            
-        }*/
-
+        if ($sType == "WAR") {
+            $sReference = Shopware()->Db()->fetchOne("select `ordernumber` from `s_order` where `id` = '" . $myId . "'");
+        }
         return $sReference;
     }
 
