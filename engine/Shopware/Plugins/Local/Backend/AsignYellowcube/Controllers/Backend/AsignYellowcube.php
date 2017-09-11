@@ -102,10 +102,14 @@ class Shopware_Controllers_Backend_AsignYellowcube extends Shopware_Controllers_
         );
 
         // set the paginator and result
-        $paginator = new Zend_Paginator_Adapter_DbSelect($query);
-        $totalCount = $paginator->count();
-        $result = $paginator->getItems($offset, $limit);
-
+        //$paginator = new Zend_Paginator_Adapter_DbSelect($query);
+        //$totalCount = $paginator->count();
+        //$result = $paginator->getItems($offset, $limit);
+		//$paginator  = new \Doctrine\ORM\Tools\Pagination\Paginator($query);
+		//$totalCount = count($paginator);
+		//$result = $paginator->setFirstResult($offset)->setMaxResults($limit)->getResult();
+		$result = Shopware()->Db()->query($query);
+		
         $data = array();
         foreach ($result as $key => $product) {
             // initialize blhasdetails
@@ -134,7 +138,7 @@ class Shopware_Controllers_Backend_AsignYellowcube extends Shopware_Controllers_
 
             $data[] = $product;
         }
-
+		$totalCount = count();
         $this->View()->assign(array('data' => $data, 'success' => true, 'total' => $totalCount));
     }
 
@@ -158,10 +162,16 @@ class Shopware_Controllers_Backend_AsignYellowcube extends Shopware_Controllers_
         $isManual = $this->getPluginConfig()->blYellowCubeOrderManualSend;
 
         // set the paginator and result
-        $paginator = new Zend_Paginator_Adapter_DbSelect($query);
-        $totalCount = $paginator->count();
-        $result = $paginator->getItems($offset, $limit);
+        //$paginator = new Zend_Paginator_Adapter_DbSelect($query);
+        //$totalCount = $paginator->count();
+        //$result = $paginator->getItems($offset, $limit);
+		
+		//$paginator  = new \Doctrine\ORM\Tools\Pagination\Paginator($query);
+		//$totalCount = count($paginator);
+		//$result = $paginator->setFirstResult($offset)->setMaxResults($limit)->getResult();
 
+		$result = Shopware()->Db()->query($query);
+		
         $data = array();
         foreach ($result as $key => $order) {
             // frame serialized responses
@@ -204,6 +214,7 @@ class Shopware_Controllers_Backend_AsignYellowcube extends Shopware_Controllers_
             $data[] = $order;
         }
 
+		$totalCount = count($data);
         $this->View()->assign(array('data' => $data, 'success' => true, 'total' => $totalCount));
     }
 
@@ -224,9 +235,14 @@ class Shopware_Controllers_Backend_AsignYellowcube extends Shopware_Controllers_
         );
 
         // set the paginator and result
-        $paginator = new Zend_Paginator_Adapter_DbSelect($query);
-        $totalCount = $paginator->count();
-        $result = $paginator->getItems($offset, $limit);
+        //$paginator = new Zend_Paginator_Adapter_DbSelect($query);
+        //$totalCount = $paginator->count();
+        //$result = $paginator->getItems($offset, $limit);
+		//$paginator  = new \Doctrine\ORM\Tools\Pagination\Paginator($query);
+		//$totalCount = count($paginator);
+		//$result = $paginator->setFirstResult($offset)->setMaxResults($limit)->getResult();
+
+		$result = Shopware()->Db()->query($query);
 
         $data = array();
         foreach ($result as $key => $inventory) {
@@ -237,6 +253,7 @@ class Shopware_Controllers_Backend_AsignYellowcube extends Shopware_Controllers_
             $data[] = $inventory;
         }
 
+		$totalCount = count($data);
         $this->View()->assign(array('data' => $data, 'success' => true, 'total' => $totalCount));
     }
 
@@ -257,15 +274,21 @@ class Shopware_Controllers_Backend_AsignYellowcube extends Shopware_Controllers_
         );
 
         // set the paginator and result
-        $paginator = new Zend_Paginator_Adapter_DbSelect($query);
-        $totalCount = $paginator->count();
-        $result = $paginator->getItems($offset, $limit);
+        //$paginator = new Zend_Paginator_Adapter_DbSelect($query);
+        //$totalCount = $paginator->count();
+        //$result = $paginator->getItems($offset, $limit);
+		//$paginator  = new \Doctrine\ORM\Tools\Pagination\Paginator($query);
+		//$totalCount = count($paginator);
+		//$result = $paginator->setFirstResult($offset)->setMaxResults($limit)->getResult();
 
+		$result = Shopware()->Db()->query($query);
+		
         $data = array();
         foreach ($result as $key => $logs) {
             $data[] = $logs;
         }
 
+		$totalCount = count($data);
         $this->View()->assign(array('data' => $data, 'success' => true, 'total' => $totalCount));
     }
 
