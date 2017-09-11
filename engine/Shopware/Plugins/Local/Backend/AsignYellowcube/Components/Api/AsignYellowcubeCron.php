@@ -83,15 +83,16 @@ class AsignYellowcubeCron
             $sWhere = " and `paymentID` <> 5 and `paymentID` <>4";
 			if ($sMode === 'pp_in') {
 				//paymentID 4 - invoice
-				//status 5 - "zur Lieferung bereit"
 				//paymentID 5 - prepayment
-                $sWhere = " and (( `paymentID` = 4 and  `status` = 5) or (`paymentID` = 5 and `cleareddate` IS NOT NULL and status = 12))"; // 12 - code for fully paid in s_core_states
+				//delivery-status (status) 5 - "zur Lieferung bereit"
+				//payment-status (cleared) 12 - code for fully paid in s_core_states
+                $sWhere = " and (( `paymentID` = 4 and  `status` = 5) or (`paymentID` = 5 and `cleareddate` IS NOT NULL and cleared = 12))"; //"status" is delivery status
             }
 			if ($sMode === 'pp') {
                 // 12 - completely_paid
-                // 2 - completed 
+                // 2 - completed "komplett abgeschlossen"
                 // as per s_core_status
-                $sWhere = " and `paymentID` = 5 and `cleareddate` IS NOT NULL and `status` = 2 and `cleared` = 12";
+                $sWhere = " and `paymentID` = 5 and `cleareddate` IS NOT NULL and (`status` = 2 or `status` = 5) and `cleared` = 12";
             }
             $aOrders  = Shopware()->Db()->fetchAll("select `id` from `s_order` where `ordernumber` > 0" . $sWhere);
 			if (count($aOrders) > 0) {
