@@ -1,13 +1,13 @@
 ## Änderungen im /raphaotten/ Fork
 Die Änderungen dienen v.a. unseren eigenen Anforderungen:
-* Automatisches Senden von Bestellungen auf Rechnung, wenn der Lieferstatus auf "teilweise ausgeliefert" steht (potentiell gefährlich?! es könnten Bestellungen per Cron mehrfach ausgeführt werden.)
+* Automatisches Senden von Bestellungen auf Rechnung, wenn der Lieferstatus auf "zur Lieferung bereit" steht
 * Erneute Abfrage der WAB-Informationen bei Fehler von YC (z.B. wenn ein Artikel nicht auf Lager ist)
 
 ## Was ist der Yellowcube?
 
 Der Yellowcube ist eine automatisierte Warenhauslösung der Swiss Post AG. Sie ermöglicht die automatisierte Verarbeitung der Einlagerung, Lagerhaltung und den Versand von kleinen Gegenständen. Mehr Informationen zum Yellowcube finden Sie auf den Seiten der Swiss Post AG.
 
-## A-SIGN Shopware2Yellowcube
+## Shopware2Yellowcube
 
 Der Yellowcube Connector verbindet Shopware mit dem Warenhaussystem des Yellowcube. Durch die Integration wird es für einen Shop-Betreiber noch einfacher von den Vorteilen einer automatisierten Lagerlösung zu profitieren. Das vollständig lizensierte Yellowcube-Modul unterstützt alle Funktionen der Yellowcube-Schnittstelle auf der Shopware-Plattform, wird regelmässig gewartet und mit neuen Funktionen des Yellowcube erweitert.
 
