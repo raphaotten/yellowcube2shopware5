@@ -48,8 +48,11 @@ class Shopware_Controllers_Widgets_AsignWidgetCube extends Enlight_Controller_Ac
             // update the orderarticles with Tara, Tariff and Origin info
             $oModel->updateHandlingInfo($aOrders['orderarticles']);
 
+	    // is the manual order sending enabled?
+	    $isManual = $this->getPluginConfig()->blYellowCubeOrderManualSend;
+			
             // if its not Prepayment(id=5) then proceed?
-            if ($aOrders['paymentid'] != "5") {
+            if ($aOrders['paymentid'] != "5" && !$isManual) {
                 //2. create the Document and save it...
                 $orderId = $aOrders['ordid'];
                 $documentType = 5;// modified version of invoice tpl
