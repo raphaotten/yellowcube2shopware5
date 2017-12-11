@@ -162,7 +162,7 @@ class Shopware_Plugins_Backend_AsignYellowcube_Bootstrap extends Shopware_Compon
             'class'         => $this->getPluginInfo('class'),
             'action'        => $this->getPluginInfo('action'),
             'active'        => 1,
-            'parent'        => $this->Menu()->findOneBy('label', $this->getPluginInfo('parent'))
+            'parent'        => $this->Menu()->findOneBy(['label' => 'Einstellungen'])
         ));
 
         $this->ycubeCreateDispatch();
