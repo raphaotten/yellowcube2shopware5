@@ -1,21 +1,21 @@
 {
-    "label"         : "A-SIGN Yellowcube Plugin v2.0",
+    "label"         : "Yellowcube Connector",
 
     "class"         : "sprite-application-icon-large",
 
-    "author"        : "A-SIGN GmbH",
+    "author"        : @RAEN GmbH",
 
-    "copyright"     : "(c) by A-SIGN",
+    "copyright"     : "(c)by RAEN GmbH (based on by A-SIGN plugin)",
 
-    "support"       : "entwicklung@a-sign.ch",
+    "support"       : "otten@raen.de",
 
-    "version"       : "2.0",
+    "version"       : "2.1",
 
     "link"          : "http://www.a-sign.ch/",
 
     "controller"    : "AsignYellowcube",
     
-    "parent"        : "Marketing",
+    "parent"        : "Einstellungen",
 
     "action"        : "Index",
 
