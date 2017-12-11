@@ -270,8 +270,23 @@ class Repository extends ModelRepository
                 // update tracking code in s_order table
                 if ($mode === 'WAR') {
                     $sTrackingCode = $clrResponse["GoodsIssue"]->CustomerOrderHeader->PostalShipmentNo;
-                    Shopware()->Db()->query("update `s_order` set `trackingcode` = '" . $sTrackingCode . "' where `id` = '" . $ordid . "'");
-                    $this->_bIsTrackingResponse = true;
+					$orderDetailArray = $clrResponse["GoodsIssue"]->CustomerOrderList->CustomerOrderDetail;
+					$sSerialnumbers = "";
+					foreach ($orderDetailArray as $orderDetail) {
+                                 if (strlen($orderDetail->SerialNumbers)>1){
+                                        $sSerialnumbers .= ",".$orderDetail->SerialNumbers;
+                                }
+                        }
+
+                        $sSerialnumbers = substr($sSerialnumbers, 1);
+                        if(strlen($sSerialnumbers)>1){
+                                $sSerialnumbers = "Seriennummern: ".$sSerialnumbers.". ";
+                        }
+                        else{
+                                $sSerialnumbers = "Keine Seriennummern. ";
+                        }
+					Shopware()->Db()->query("update `s_order` set status=7, `internalcomment` = '" .$sSerialnumbers ."' , `trackingcode` = '" . $sTrackingCode . "' where `id` = '" . $ordid . "'");
+					$this->_bIsTrackingResponse = true;
                 }
             }
         } catch(\Exception $e) {
