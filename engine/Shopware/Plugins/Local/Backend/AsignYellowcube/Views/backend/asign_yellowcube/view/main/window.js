@@ -62,14 +62,14 @@ Ext.define('Shopware.apps.AsignYellowcube.view.main.Window', {
         var tabPanel = Ext.create('Ext.tab.Panel', {
             items: [
                 {
-                    xtype: 'asignyellowcube-tabs-product',
-                    artStore: me.artStore,
-                    title: me.snippets.articles
-                },
-                {
                     xtype: 'asignyellowcube-tabs-order',
                     title: me.snippets.orders,
                     ordStore: me.ordStore
+                },
+                {
+                    xtype: 'asignyellowcube-tabs-product',
+                    artStore: me.artStore,
+                    title: me.snippets.articles
                 },
                 {
                     xtype: 'asignyellowcube-tab-inventory',
